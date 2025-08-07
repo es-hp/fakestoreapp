@@ -1,0 +1,14 @@
+#featured-product-card {
+  border-radius: 1rem;
+  height: auto;
+  overflow: hidden;
+  transition: box-shadow 150ms ease-out;
+}
+
+#featured-product-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#featured-text {
+  background-color: #fff9c4;
+}

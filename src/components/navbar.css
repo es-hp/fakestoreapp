@@ -1,0 +1,46 @@
+:root {
+  --color-gray-medium: rgb(234, 234, 234);
+}
+
+#main-logo {
+  font-family: serif;
+  color: rgb(246, 106, 0);
+  font-size: 3rem;
+}
+
+#category-toggle {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: black;
+  font-weight: 600;
+  border: none;
+  transition: background 0.1ms ease-out;
+}
+
+#category-toggle:hover {
+  background-color: var(--color-gray-medium);
+}
+
+#category-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  padding: 1rem 0;
+  width: 250px;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background 0.1s ease-out;
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-gray-medium);
+  text-decoration: underline;
+}
