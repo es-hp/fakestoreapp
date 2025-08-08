@@ -16,6 +16,7 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
     description: "",
     category: "",
     customCategory: "",
+    image: null,
   });
 
   const [validated, setValidated] = useState(false);
@@ -58,6 +59,14 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
     }
   };
 
+  const handleImgUpload = (e) => {
+    const file = e.target.files[0];
+    setFormData((prev) => ({
+      ...prev,
+      image: file,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,6 +105,7 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
             description: "",
             category: "",
             customCategory: "",
+            image: null,
           });
           setValidated(false);
           setSubmitted(false);
@@ -121,7 +131,8 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
           className="d-flex flex-column align-items-start"
           style={{ width: "100%", minWidth: "300px", maxWidth: "720px" }}
         >
-          <h2 className="mb-4">Add New Product</h2>
+          <h2 className="mb-2">Add New Product</h2>
+          <p className="text-secondary mb-3">All fields are required.</p>
           <Form
             noValidate
             validated={validated}
@@ -205,6 +216,17 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
                 required
               />
             </InputGroup>
+            <Form.Group controlId="productImage">
+              <Form.Label className="text-secondary">
+                Upload product image
+              </Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={handleImgUpload}
+                required
+              />
+            </Form.Group>
             <Button
               variant="warning"
               type="submit"

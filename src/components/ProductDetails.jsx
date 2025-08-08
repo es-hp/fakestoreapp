@@ -11,6 +11,7 @@ import axios from "axios";
 import { BsTrash3 } from "react-icons/bs";
 import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
+import { BsPencilSquare } from "react-icons/bs";
 
 function ProductDetails({ products }) {
   const { id } = useParams();
@@ -113,14 +114,21 @@ function ProductDetails({ products }) {
           className="d-flex flex-column justify-content-between p-5 bg-light rounded-4"
           style={{ maxWidth: "600px" }}
         >
-          <div className="align-self-end mb-2">
+          <div className="d-flex gap-2 align-self-end mb-2">
             <BsTrash3
               onClick={() => setShowDeleteModal(true)}
               size={20}
               className="text-secondary hover-fade cursor-pointer"
+              alt="Delete Product"
+            />
+            <BsPencilSquare
+              onClick={() => navigate(`/edit-product/${id}`)}
+              size={20}
+              className="text-secondary hover-fade cursor-pointer"
+              alt="Edit Product"
             />
           </div>
-          <h2 className="mb-5">{product.title}</h2>
+          <h2 className="mb-4">{product.title}</h2>
           <p className="mb-4">{product.description}</p>
           <p className="mb-5 fs-5">
             <i>${product.price}</i>

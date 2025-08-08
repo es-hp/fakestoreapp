@@ -62,7 +62,15 @@ function App() {
             />
           }
         />
-        <Route path="/edit-product" element={<EditProduct />} />
+        <Route
+          path="/edit-product/:id"
+          element={
+            <EditProduct
+              uniqueCategories={uniqueCategories}
+              refreshProducts={fetchProducts}
+            />
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {error && <p className="text-danger">{error}</p>}
