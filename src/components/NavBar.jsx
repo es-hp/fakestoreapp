@@ -76,9 +76,6 @@ function NavBar({ uniqueCategories }) {
             <NavDropdown.Item as={NavLink} to="/add-product">
               Add Product
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/edit-product">
-              Edit Product
-            </NavDropdown.Item>
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
