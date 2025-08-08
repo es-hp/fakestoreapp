@@ -14,7 +14,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchProducts = () => {
     axios
       .get("https://fakestoreapi.com/products")
       .then((response) => {
@@ -23,6 +23,10 @@ function App() {
       .catch((error) => {
         setError(`Failed to fetch data: ${error.message}`);
       });
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
   const uniqueCategories = [
@@ -49,7 +53,15 @@ function App() {
           path="/products/details/:id"
           element={<ProductDetails products={products} error={error} />}
         />
-        <Route path="/add-product" element={<AddProduct />} />
+        <Route
+          path="/add-product"
+          element={
+            <AddProduct
+              uniqueCategories={uniqueCategories}
+              refreshProducts={fetchProducts}
+            />
+          }
+        />
         <Route path="/edit-product" element={<EditProduct />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
