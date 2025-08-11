@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
@@ -19,11 +19,13 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
     image: null,
   });
 
+  const [imagePreview, setImagePreview] = useState(null);
   const [validated, setValidated] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isDirty, setIsDirty] = useState(false); //When user changes something in the form
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,6 +33,7 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
       ...formData,
       [name]: value,
     });
+    setIsDirty(true);
   };
 
   const handlePriceChange = (e) => {
@@ -42,6 +45,7 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
         [name]: value,
       }));
     }
+    setIsDirty(true);
   };
 
   const handlePriceBlur = (e) => {
@@ -57,15 +61,36 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
         price: convertedToNum.toFixed(2),
       }));
     }
+    setIsDirty(true);
   };
 
   const handleImgUpload = (e) => {
     const file = e.target.files[0];
+
+    if (!file) return;
+
     setFormData((prev) => ({
       ...prev,
       image: file,
     }));
+    setImagePreview(URL.createObjectURL(file));
+    setIsDirty(true);
   };
+
+  //Unsaved changes prompt: When user tries to reload or close the tab
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = ""; //Default warning for browsers (required for chrome)
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isDirty]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -222,10 +247,23 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
               </Form.Label>
               <Form.Control
                 type="file"
-                accept="image/*"
+                accept=".jpg, .jpeg, .png, .gif, .svg"
                 onChange={handleImgUpload}
+                disabled={isSubmitting}
                 required
               />
+              <Form.Text className="d-flex text-muted text-end justify-content-end">
+                .jpg, .jpeg, .png, .gif, .svg
+              </Form.Text>
+              {imagePreview && (
+                <div className="d-flex justify-content-center">
+                  <img
+                    src={imagePreview}
+                    alt="preview"
+                    style={{ maxHeight: "200px", marginTop: "3rem" }}
+                  />
+                </div>
+              )}
             </Form.Group>
             <Button
               variant="warning"

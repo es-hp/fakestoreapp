@@ -5,6 +5,8 @@ import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
+import Modal from "react-bootstrap/Modal";
+import Alert from "react-bootstrap/Alert";
 import axios from "axios";
 import { makeTitleCase } from "../utilities/textUtilities";
 
@@ -25,7 +27,11 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const navigate = useNavigate();
+  const [isDirty, setIsDirty] = useState(false); //When user changes something in the form
 
   useEffect(() => {
     axios
@@ -34,7 +40,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
         const p = response.data;
         setFormData({
           productTitle: p.title || "",
-          price: p.price?.toFixed(2) || "",
+          price: p.price != null ? p.price.toFixed(2) : "",
           description: p.description || "",
           category: p.category || "",
           customCategory: "",
@@ -43,7 +49,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
         setImagePreview(p.image || null);
       })
       .catch((error) => {
-        setError(`Failed to fetch product: ${error}`);
+        setError(`Failed to fetch product: ${error.message}`);
       });
   }, [id]);
 
@@ -53,6 +59,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
       ...formData,
       [name]: value,
     });
+    setIsDirty(true);
   };
 
   const handlePriceChange = (e) => {
@@ -64,6 +71,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
         [name]: value,
       }));
     }
+    setIsDirty(true);
   };
 
   const handlePriceBlur = (e) => {
@@ -79,17 +87,39 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
         price: convertedToNum.toFixed(2),
       }));
     }
+    setIsDirty(true);
   };
 
   const handleImgUpload = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    const imageURL = URL.createObjectURL(file);
+
     setFormData((prev) => ({
       ...prev,
-      image: file,
+      image: imageURL,
     }));
-    setImagePreview(URL.createObjectURL(file));
+    setImagePreview(imageURL);
+    setIsDirty(true);
   };
 
+  //Unsaved changes prompt: When user tries to reload or close the tab
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = ""; //Default warning for browsers (required for chrome)
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isDirty]);
+
+  //When changes are submitted
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -135,10 +165,34 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
         setSubmitted(false);
       } finally {
         setIsSubmitting(false);
+        setIsDirty(false);
       }
     }
     setValidated(true);
   };
+
+  //Handle delete product
+  function handleDelete() {
+    setIsDeleting(true);
+    axios
+      .delete(`https://fakestoreapi.com/products/${id}`)
+      .then(() => {
+        setShowDeleteModal(false);
+        setShowConfirmModal(true);
+        if (refreshProducts) refreshProducts();
+        setTimeout(() => {
+          setShowConfirmModal(false);
+          navigate("/products");
+        }, 2000);
+      })
+      .catch((err) => {
+        setShowDeleteModal(false);
+        alert("Failed to delete product: " + err.message);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  }
 
   return (
     <>
@@ -242,25 +296,75 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
                 type="file"
                 accept="image/*"
                 onChange={handleImgUpload}
+                disabled={isSubmitting}
               />
+              <Form.Text className="d-flex text-muted text-end justify-content-end">
+                .jpg, .jpeg, .png, .gif, .svg
+              </Form.Text>
               {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="preview"
-                  style={{ maxHeight: "200px", marginTop: "1rem" }}
-                />
+                <div className="d-flex justify-content-center">
+                  <img
+                    src={imagePreview}
+                    alt="preview"
+                    style={{ maxHeight: "200px", marginTop: "3rem" }}
+                  />
+                </div>
               )}
             </Form.Group>
-            <Button
-              variant="warning"
-              type="submit"
-              className="mt-3 align-self-center"
-              disabled={isSubmitting}
-            >
-              Submit
-            </Button>
+            <div className="d-flex gap-4 mt-3 align-self-center">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
+                disabled={isSubmitting}
+              >
+                Delete Product
+              </Button>
+              <Button variant="warning" type="submit" disabled={isSubmitting}>
+                Submit
+              </Button>
+            </div>
           </Form>
         </div>
+        <Modal
+          id="delete-product"
+          show={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Product</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              Continue to delete <b>{formData.productTitle.trim()}</b>?
+            </p>
+            <p>This action cannot be undone.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          id="delete-confirm"
+          show={showConfirmModal}
+          onHide={() => setShowConfirmModal(false)}
+          centered
+        >
+          <Modal.Body>Product deleted successfully.</Modal.Body>
+        </Modal>
       </Container>
       {submitted && (
         <Modal

@@ -13,7 +13,7 @@ import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
 import { BsPencilSquare } from "react-icons/bs";
 
-function ProductDetails({ products }) {
+function ProductDetails({ products, refreshProducts }) {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
@@ -68,6 +68,7 @@ function ProductDetails({ products }) {
       .then(() => {
         setShowDeleteModal(false);
         setShowConfirmModal(true);
+        if (refreshProducts) refreshProducts();
         setTimeout(() => {
           setShowConfirmModal(false);
           navigate("/products");
@@ -114,7 +115,7 @@ function ProductDetails({ products }) {
           className="d-flex flex-column justify-content-between p-5 bg-light rounded-4"
           style={{ maxWidth: "600px" }}
         >
-          <div className="d-flex gap-2 align-self-end mb-2">
+          <div className="d-flex gap-3 align-self-end mb-2">
             <BsTrash3
               onClick={() => setShowDeleteModal(true)}
               size={20}
@@ -188,8 +189,10 @@ function ProductDetails({ products }) {
           <Modal.Title>Delete Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Continue to delete <b>{product.title}</b>? <br />
-          This action cannot be undone.
+          <p>
+            Continue to delete <b>{product.title.trim()}</b>?
+          </p>
+          <p>This action cannot be undone.</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>

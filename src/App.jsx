@@ -51,7 +51,13 @@ function App() {
         />
         <Route
           path="/products/details/:id"
-          element={<ProductDetails products={products} error={error} />}
+          element={
+            <ProductDetails
+              products={products}
+              error={error}
+              refreshProducts={fetchProducts}
+            />
+          }
         />
         <Route
           path="/add-product"
