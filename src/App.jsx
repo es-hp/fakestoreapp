@@ -1,13 +1,18 @@
+// External Libraries
+import axios from "axios";
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import HomePage from "./components/HomePage";
-import NavBar from "./components/NavBar";
-import NotFound from "./components/NotFound";
-import Products from "./components/Products";
-import ProductDetails from "./components/ProductDetails";
-import AddProduct from "./components/AddProduct";
-import EditProduct from "./components/EditProduct.jsx";
+
+// Components
+import AddProduct from "@components/AddProduct";
+import EditProduct from "@components/EditProduct.jsx";
+import HomePage from "@components/HomePage";
+import NavBar from "@components/NavBar";
+import NotFound from "@components/NotFound";
+import ProductDetails from "@components/ProductDetails";
+import Products from "@components/Products";
+
+// Styles
 import "./App.css";
 
 function App() {
@@ -25,10 +30,12 @@ function App() {
       });
   };
 
+  // Fetch data once after the component mounts
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // Create an array with the list of product categories from api without repeats.
   const uniqueCategories = [
     ...new Set(products.map((product) => product.category)),
   ];

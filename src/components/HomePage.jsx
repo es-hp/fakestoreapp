@@ -1,12 +1,16 @@
-import Container from "react-bootstrap/Container";
-import Card from "react-bootstrap/Card";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
+// External Libraries
 import { Link } from "react-router-dom";
+
+// React Bootstrap Components
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
+
+// Styles
 import "./homepage.css";
 
 function HomePage({ products, error }) {
+  // Error and loading handling
   if (error) {
     return (
       <Container>
@@ -23,6 +27,7 @@ function HomePage({ products, error }) {
     );
   }
 
+  // Get featured product
   const featuredProduct = products[2];
 
   return (

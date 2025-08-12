@@ -1,22 +1,30 @@
+// External libraries
+import { Link, useParams } from "react-router-dom";
+
+// React Bootstrap Components
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import { Link } from "react-router-dom";
-import Breadcrumb from "react-bootstrap/Breadcrumb";
-import "./products.css";
-import { useParams } from "react-router-dom";
+
+// Internal utilities and helpers
 import { makeTitleCase } from "../utilities/textUtilities";
+
+// Styles
+import "./products.css";
 
 function Products({ products, error }) {
   const { category } = useParams();
 
+  // Filtered array of products by category
   const filteredProducts = category
     ? products.filter(
         (p) => p.category.toLowerCase() === category.toLowerCase()
       )
     : products;
 
+  // Error and loading handling
   if (error) {
     return (
       <Container>

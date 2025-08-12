@@ -1,17 +1,24 @@
-import { useNavigate, useParams } from "react-router-dom";
+// External Libraries
+import axios from "axios";
 import { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
+import { useNavigate, useParams } from "react-router-dom";
+
+// React Bootstrap Components
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
-import Alert from "react-bootstrap/Alert";
-import axios from "axios";
+
+// Utility functions
 import { makeTitleCase } from "../utilities/textUtilities";
 
 function EditProduct({ uniqueCategories, refreshProducts }) {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     productTitle: "",
     price: "",
@@ -21,18 +28,25 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
     image: null,
   });
 
+  // Form interaction states
   const [imagePreview, setImagePreview] = useState(null);
+  const [isDirty, setIsDirty] = useState(false); //When user changes something in the form
   const [validated, setValidated] = useState(false);
+
+  // Form submission states
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Delete product states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const navigate = useNavigate();
-  const [isDirty, setIsDirty] = useState(false); //When user changes something in the form
 
+  // Error state
+  const [error, setError] = useState(null);
+
+  // Get product data
   useEffect(() => {
     axios
       .get(`https://fakestoreapi.com/products/${id}`)
@@ -53,6 +67,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
       });
   }, [id]);
 
+  // Handle form interaction
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -104,7 +119,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
     setIsDirty(true);
   };
 
-  //Unsaved changes prompt: When user tries to reload or close the tab
+  // Unsaved changes prompt (When user tries to reload or close the tab)
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (isDirty) {
@@ -119,7 +134,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
     };
   }, [isDirty]);
 
-  //When changes are submitted
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -171,7 +186,7 @@ function EditProduct({ uniqueCategories, refreshProducts }) {
     setValidated(true);
   };
 
-  //Handle delete product
+  // Handle delete product
   function handleDelete() {
     setIsDeleting(true);
     axios

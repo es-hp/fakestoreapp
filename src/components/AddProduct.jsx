@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Button from "react-bootstrap/Button";
-import Alert from "react-bootstrap/Alert";
-import Modal from "react-bootstrap/Modal";
-import InputGroup from "react-bootstrap/InputGroup";
-import { makeTitleCase } from "../utilities/textUtilities";
+// External Libraries
 import axios from "axios";
+import { useState, useEffect } from "react";
+
+// React Bootstrap Components
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Modal from "react-bootstrap/Modal";
+
+// Utility Functions
+import { makeTitleCase } from "../utilities/textUtilities";
 
 function AddProduct({ uniqueCategories, refreshProducts }) {
   const [formData, setFormData] = useState({
@@ -19,14 +24,20 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
     image: null,
   });
 
+  // Form interaction states
   const [imagePreview, setImagePreview] = useState(null);
+  const [isDirty, setIsDirty] = useState(false); //When user changes something in the form
   const [validated, setValidated] = useState(false);
+
+  // Form submission states
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [isDirty, setIsDirty] = useState(false); //When user changes something in the form
 
+  // Error state
+  const [error, setError] = useState(null);
+
+  // Handle form interaction
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -66,23 +77,24 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
 
   const handleImgUpload = (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
+
+    const imageURL = URL.createObjectURL(file);
 
     setFormData((prev) => ({
       ...prev,
-      image: file,
+      image: imageURL,
     }));
-    setImagePreview(URL.createObjectURL(file));
+    setImagePreview(imageURL);
     setIsDirty(true);
   };
 
-  //Unsaved changes prompt: When user tries to reload or close the tab
+  // Unsaved changes prompt (When user tries to reload or close the tab)
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (isDirty) {
         e.preventDefault();
-        e.returnValue = ""; //Default warning for browsers (required for chrome)
+        e.returnValue = ""; // Default warning for browsers (required for chrome)
       }
     };
 
@@ -92,13 +104,15 @@ function AddProduct({ uniqueCategories, refreshProducts }) {
     };
   }, [isDirty]);
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const addProductForm = e.currentTarget;
 
     if (addProductForm.checkValidity() === false) {
-      e.stopPropagation();
+      // If form is not completed correctly...
+      e.stopPropagation(); // Prevents other event listeners higher in the DOM tree from triggering other handlers.
     } else {
       try {
         setIsSubmitting(true);

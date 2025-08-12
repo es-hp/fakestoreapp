@@ -1,28 +1,38 @@
-import { useParams } from "react-router-dom";
-import Container from "react-bootstrap/Container";
+// External Libraries
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+// React Bootstrap Components
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import "./products.css";
-import { useState, useEffect } from "react";
+import Modal from "react-bootstrap/Modal";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
-import axios from "axios";
-import { BsTrash3 } from "react-icons/bs";
-import Modal from "react-bootstrap/Modal";
-import { useNavigate } from "react-router-dom";
+
+// Bootstrap Icons
 import { BsPencilSquare } from "react-icons/bs";
+import { BsTrash3 } from "react-icons/bs";
+
+// Styles
+import "./products.css";
 
 function ProductDetails({ products, refreshProducts }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [error, setError] = useState(null);
+
+  // Delete product states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const navigate = useNavigate();
 
-  //Get data
+  // Error state
+  const [error, setError] = useState(null);
+
+  // Get product data
   useEffect(() => {
     const productFromProps = products.find((p) => String(p.id) === String(id));
     if (productFromProps) {
@@ -35,7 +45,7 @@ function ProductDetails({ products, refreshProducts }) {
     }
   }, [id, products]);
 
-  //Set quantity
+  // Set and handle quantity input
   const [quantity, setQuantity] = useState(1);
 
   function increase() {
@@ -46,13 +56,13 @@ function ProductDetails({ products, refreshProducts }) {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   }
 
-  //Handle manual user quantity input
+  // Handle manual user quantity input
   function handleChange(e) {
     const value = Math.max(1, Number(e.target.value));
     setQuantity(value);
   }
 
-  //Show popup alert for successfully adding to cart
+  // Show popup alert for successfully adding to cart
   const [showAlert, setShowAlert] = useState(false);
 
   function handleSubmit(e) {
@@ -60,7 +70,7 @@ function ProductDetails({ products, refreshProducts }) {
     setShowAlert(true);
   }
 
-  //Handle delete product
+  // Handle delete product
   function handleDelete() {
     setIsDeleting(true);
     axios
@@ -83,6 +93,7 @@ function ProductDetails({ products, refreshProducts }) {
       });
   }
 
+  // Error and Loading handling
   if (error)
     return (
       <Container>

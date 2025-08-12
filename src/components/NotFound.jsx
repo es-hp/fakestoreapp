@@ -1,9 +1,14 @@
-import Container from "react-bootstrap/Container";
-import { useNavigate, Link } from "react-router-dom";
+// External Libraries
 import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+// React Bootstrap Components
+import Container from "react-bootstrap/Container";
 
 function NotFound() {
   const navigate = useNavigate();
+
+  // Countdown timer state
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {

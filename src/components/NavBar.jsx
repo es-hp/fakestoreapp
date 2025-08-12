@@ -1,13 +1,22 @@
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import { NavLink } from "react-router-dom";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import Dropdown from "react-bootstrap/Dropdown";
-import "./navbar.css";
-import { BsList, BsPencilSquare } from "react-icons/bs";
-import Button from "react-bootstrap/Button";
+// External Libraries
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
+
+// React Bootstrap Components
+import Button from "react-bootstrap/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+
+// Bootstrap Icons
+import { BsList, BsPencilSquare } from "react-icons/bs";
+
+// Utility functions
 import { makeTitleCase } from "../utilities/textUtilities";
+
+// Styles
+import "./navbar.css";
 
 function NavBar({ uniqueCategories }) {
   const [showCategories, setShowCategories] = useState(false);
